@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+//SERVIDOR
 public class RelojUno implements Runnable{
     public static final int puerto = 5000;
     
@@ -56,20 +56,24 @@ public class RelojUno implements Runnable{
                 ObjectOutputStream obs = new ObjectOutputStream(socketCliente.getOutputStream());
                 obs.writeObject(setReloj());
                 obs.flush();
-                ObjectInputStream oi = new ObjectInputStream(socketCliente.getInputStream());
                 
+                //ObjectInputStream oi = new ObjectInputStream(socketCliente.getInputStream());
+                while(true)
             
-                while(true){//Se quito el sleep ya que ya se tiene uno arriba y el tiempo de proceso cubre el segundo
+//                while(true){//Se quito el sleep ya que ya se tiene uno arriba y el tiempo de proceso cubre el segundo
                     if(Thread.interrupted()){
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(5000);
+                            obs.writeObject(setReloj());
+                            obs.flush();
                         } catch (InterruptedException e) {
                         }
                     }
-                    hora = (Time) oi.readObject();
-                    obs.writeObject(iniciaReloj(hora.getHours(),hora.getMinutes(),hora.getSeconds()));
-                    obs.flush();
-                }
+//                    
+//                    hora = (Time) oi.readObject();
+//                    obs.writeObject(iniciaReloj(hora.getHours(),hora.getMinutes(),hora.getSeconds()));
+//                    obs.flush();
+//                }
                 
                 //obs.close();
                 //socketCliente.close();

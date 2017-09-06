@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import visual.Reloj_cliente;
-import visual.Reloj_servidor;
 
 /**
  * @author Sadok

@@ -11,46 +11,53 @@ import java.util.logging.Logger;
 import javax.swing.JTextField;
 import visual.*;
 
+//CLIENTE
 public class RelojDos implements Runnable{
     
-    private Cliente cliente = new Cliente();
-    
     public void iniciaCliente() throws IOException, ClassNotFoundException {
-        Socket socket = new Socket("127.0.0.1", ServidorHora.puerto);
+        Socket socket = new Socket("127.0.0.1", RelojUno.puerto);
         
         Date fecha;
-        JTextField string = new JTextField();
-        
         ObjectInputStream oi = new ObjectInputStream(socket.getInputStream());
         //Establece hora
         fecha = (Time) oi.readObject();
-        string.setText(Integer.toString(fecha.getHours()));
-        cliente.setH(string);
-        System.out.println(cliente.getH());
-        string.setText(Integer.toString(fecha.getMinutes()));
-        cliente.setH(string);
-        string.setText(Integer.toString(fecha.getSeconds()));
-        cliente.setH(string);
         
-        System.err.println(fecha);
+        System.out.println(fecha);
+        
+        Clock hilo1 = new Clock(fecha.getHours(), fecha.getMinutes(), fecha.getSeconds());
+        Thread h1 = new Thread(hilo1,"Hora_contador");
+        h1.start();
+        
+        
+        h1.interrupt();
+        hilo1.setH(22);
+        hilo1.setM(22);
+        hilo1.setS(22);
+        
+        
+        try {
+            Thread.sleep(6000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RelojDos.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        fecha = (Time) oi.readObject();
+        h1.interrupt();
+        hilo1.setH(fecha.getHours());
+        hilo1.setM(fecha.getMinutes());
+        hilo1.setS(fecha.getSeconds());
         //Envia hora para actualizar
-        ObjectOutputStream obs = new ObjectOutputStream(socket.getOutputStream());
-        Time time = Time.valueOf("00:05:29");
+        //ObjectOutputStream obs = new ObjectOutputStream(socket.getOutputStream());
+//        Time time = Time.valueOf("00:05:29");
 //        
 //        
 //        //Envia y recibe hora
-        while(true){
-            System.err.println(fecha);
-            obs.writeObject(time);
-            time = (Time) oi.readObject();
-            string.setText(Integer.toString(time.getHours()));
-            cliente.setH(string);
-            string.setText(Integer.toString(time.getMinutes()));
-            cliente.setH(string);
-            string.setText(Integer.toString(time.getSeconds()));
-            cliente.setH(string);
-            
-        }
+//        while(true){
+//            System.err.println(fecha);
+//            obs.writeObject(time);
+//            time = (Time) oi.readObject();
+//            
+//        }
         
         //br.close();
         //socket.close();
@@ -63,7 +70,6 @@ public class RelojDos implements Runnable{
     @Override
     public void run(){
         try {
-            cliente.setVisible(true);
             iniciaCliente();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(RelojDos.class.getName()).log(Level.SEVERE, null, ex);

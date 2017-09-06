@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package visual;
 
 import java.io.IOException;
@@ -18,10 +23,10 @@ import java.util.logging.Logger;
  *
  * @author Sadok
  */
-public class Reloj_cliente extends javax.swing.JFrame {
-    
+public class Reloj_cliente2 extends javax.swing.JFrame {
+        
     //Inicia los hilos y los componenetes
-    public Reloj_cliente() {
+    public Reloj_cliente2() {
         initComponents();
         h1.start(); //Servidor
         try {//Sleep para prender primero todos los servers y después ya los clientes
@@ -70,7 +75,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
                     Thread.sleep(1000);//Da la simulación de conteo cada segundo
                 } catch (InterruptedException e) {//Si se interrumpe cuando está el sleep anterior
                     try {//Detiene el tiempo en el TextArea para modificar hora
-                        Thread.sleep(100);//Se dan 50 ms para interrumpir de nuevo o para enviar nueva hora
+                        Thread.sleep(100);//Se dan 10 segundos para modificar la hora antes de iniciar el conteo nuevamente
                     } catch (InterruptedException ex) {
                         try {
                             Thread.sleep(15000);//Detiene el conteo por 15 segundos
@@ -127,11 +132,11 @@ public class Reloj_cliente extends javax.swing.JFrame {
     
     //Cliente
     private Thread clock;//Hilo que controla el conteo e impresion del reloj
-    private Clock reloj;//Variable para los valores del reloj
+    private Clock reloj;
     class RelojDos implements Runnable{
         
         public void iniciaCliente() throws IOException, ClassNotFoundException {
-            Socket socket = new Socket("127.0.0.1", 5000);//Conectar a:
+            Socket socket = new Socket("127.0.0.1", 5001);//Conectar a:
             ObjectInputStream oi = new ObjectInputStream(socket.getInputStream());//Abre socket para recibir datos
             Date fecha = (Time) oi.readObject();//Establece hora enviada por el server
 
@@ -145,7 +150,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
                 reloj.setHoras(fecha.getHours());
                 reloj.setMinutos(fecha.getMinutes());
                 reloj.setSegundos(fecha.getSeconds());
-                clock.interrupt();//Actualiza la hora
+                clock.interrupt();//Manda a actualizar la hora
             }
         }
 
@@ -164,7 +169,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
     
     //Servidor
     class RelojUno implements Runnable{
-        public static final int puerto = 5001;//Puerto a usar para servir
+        public static final int puerto = 5000;//Puerto a usar para servir
 
         public Time setReloj(){//Para inicializar la hora 
             return Time.valueOf(LocalTime.of(LocalDateTime.now().getHour(), LocalDateTime.now().getMinute(),LocalDateTime.now().getSecond()));
@@ -184,7 +189,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
                         try {
                             //Se interrumpe el conteo y permite cambiar la hora del TextArea - 2 Necesarios
                             clock.interrupt();
-                            Thread.sleep(50);//Para que se haga bien la segunda interrupcion
+                            Thread.sleep(50);
                             clock.interrupt();
                             Thread.sleep(15000);//Espera 10s antes de enviar la nueva hora
                             //Envia los datos obtenidos y limpia buffer
@@ -245,14 +250,14 @@ public class Reloj_cliente extends javax.swing.JFrame {
 
         jLabel2.setText(":");
 
-        jLabel3.setText("RELOJ 1");
+        jLabel3.setText("RELOJ 2");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(56, 56, 56)
+                .addGap(53, 53, 53)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(h, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -268,25 +273,25 @@ public class Reloj_cliente extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(s, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
+                        .addGap(23, 23, 23)
                         .addComponent(interrupcion)))
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(23, Short.MAX_VALUE)
                 .addComponent(jLabel3)
-                .addGap(13, 13, 13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(h, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
-                    .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
+                    .addComponent(h, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(s, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(interrupcion)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -313,20 +318,21 @@ public class Reloj_cliente extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Reloj_cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Reloj_cliente2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Reloj_cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Reloj_cliente2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Reloj_cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Reloj_cliente2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Reloj_cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Reloj_cliente2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Reloj_cliente().setVisible(true);
+                new Reloj_cliente2().setVisible(true);
             }
         });
     }
