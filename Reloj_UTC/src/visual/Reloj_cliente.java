@@ -15,6 +15,8 @@ import java.util.logging.Logger;
  * @author Sadok
  */
 public class Reloj_cliente extends javax.swing.JFrame {
+    private boolean flag;
+    private boolean cambia;
     
     public Reloj_cliente() {
         initComponents();
@@ -53,26 +55,30 @@ public class Reloj_cliente extends javax.swing.JFrame {
             this.segundo = segundo;
         }
 
-        public Time iniciaReloj(int hora, int minuto, int segundo) throws ParseException{
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    return null;
-                }
-                if(segundo < 59){
-                    segundo++;
-                }else if(minuto < 59){
-                    segundo = 0;
-                    minuto += 1;
-                }else if(hora < 23){
-                    minuto = 0;
-                    segundo = 0;
-                    hora += 1;
+        public Time iniciaReloj(int hora, int minuto, int segundo) throws ParseException{  
+            try {
+                if(flag==true){
+                    Thread.sleep(2000);
                 }else{
-                    minuto = 0;
-                    segundo = 0;
-                    hora = 0;
+                    Thread.sleep(1000);
                 }
+            } catch (InterruptedException e) {
+                return null;
+            }
+            if(segundo < 59){
+                segundo++;
+            }else if(minuto < 59){
+                segundo = 0;
+                minuto += 1;
+            }else if(hora < 23){
+                minuto = 0;
+                segundo = 0;
+                hora += 1;
+            }else{
+                minuto = 0;
+                segundo = 0;
+                hora = 0;
+            }
 
                 Time time = Time.valueOf(hora+":"+minuto+":"+segundo);
                 return time;
@@ -84,7 +90,18 @@ public class Reloj_cliente extends javax.swing.JFrame {
                 try {
                     hora = iniciaReloj(hora.getHours(), hora.getMinutes(), hora.getSeconds());
                     if(hora==null){
-                        hora = Time.valueOf(getH()+":"+getM()+":"+getS());
+                        if(cambia==true){
+                            try {
+                                Thread.sleep(15000);
+                                cambia = false;
+                            } catch (InterruptedException e) {
+                                hora = Time.valueOf(h.getText()+":"+m.getText()+":"+s.getText());
+                                cambia = false;
+                            }
+                            hora = Time.valueOf(h.getText()+":"+m.getText()+":"+s.getText());
+                        }else{
+                            hora = Time.valueOf(getH()+":"+getM()+":"+getS());
+                        }
                     }
                 } catch (ParseException ex) {
                     Logger.getLogger(Clock.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,7 +119,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
             iniciaConteo();
         }
     }
-    Clock reloj = new Clock(22, 05, 11);
+    Clock reloj = new Clock(22, 22, 22);
     Thread hora = new Thread(reloj, "Hora_Cliente");
 
     class Cliente implements Runnable{
@@ -112,7 +129,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
             ObjectInputStream oi = new ObjectInputStream(socket.getInputStream());
             Date fechaAntes = new Date();//Para comparar la fecha que se tenía en el jframe
             boolean suspend = false;//Para saber si el hilo esta suspendido
-            boolean flag = false;//Para saber si se debe de suspender o no
+            //boolean flag = false;//Para saber si se debe de suspender o no
             
             Date fecha = (Date) oi.readObject();//Recibe la hora del servidor
     //        Clock reloj = new Clock(fecha.getHours(), fecha.getMinutes(), fecha.getSeconds());//Descomentar para sincronizar al inicio
@@ -124,14 +141,13 @@ public class Reloj_cliente extends javax.swing.JFrame {
                 
                 if( (flag==true)&(suspend==false) ){
                     //Si la esta hora esta adelantada se detiene conteo
-                    hora.suspend();
+                    //hora.suspend();
                     suspend = true;
                 }else if( (flag==false)&(suspend==true) ){
                     //Si la esta hora esta atrasada y se detuvo el conteo del reloj entonces se actualiza
                     reloj.setH(fecha.getHours());
                     reloj.setM(fecha.getMinutes());
                     reloj.setS(fecha.getSeconds());
-                    hora.resume();
                     hora.sleep(10);
                     suspend = false;
                     hora.interrupt();
@@ -141,6 +157,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
                     reloj.setH(fecha.getHours());
                     reloj.setM(fecha.getMinutes());
                     reloj.setS(fecha.getSeconds());
+                    System.out.println("false-false");
                     hora.interrupt();
                 }                
             }
@@ -184,6 +201,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -193,24 +211,36 @@ public class Reloj_cliente extends javax.swing.JFrame {
 
         jLabel3.setText("RELOJ 1");
 
+        jButton1.setText("Cambiar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(56, 56, 56)
-                .addComponent(h, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGap(56, 56, 56)
+                        .addComponent(h, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(s, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(s, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addComponent(jButton1)))
                 .addContainerGap(81, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -225,11 +255,18 @@ public class Reloj_cliente extends javax.swing.JFrame {
                     .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(s, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        cambia = true;
+        hora.interrupt();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -269,6 +306,7 @@ public class Reloj_cliente extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField h;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

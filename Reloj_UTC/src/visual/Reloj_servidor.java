@@ -290,7 +290,7 @@ public class Reloj_servidor extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        interrupcion.setText("Cambiar");
+        interrupcion.setText("Actualizar");
         interrupcion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 interrupcionActionPerformed(evt);
